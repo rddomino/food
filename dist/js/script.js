@@ -213,4 +213,64 @@ window.addEventListener('DOMContentLoaded', () => {
     ).render();
 
     // /---Используем классы для карточек товаров
+
+    // --Отправка формы через старый метод ХMLHttpRequest
+
+        const forms = document.querySelectorAll('form');
+
+        const message = {
+            loading: 'Загрузка',
+            success: 'Спасибо, скоро мы с вами свяжемся',
+            failure: 'Что-то пошло не так...'
+        };
+
+        forms.forEach(item => {
+            postData(item);
+        });
+
+        function postData(form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const statusMessage = document.createElement('div');
+                statusMessage.classList.add('status');
+                statusMessage.textContent = message.loading;
+                form.append(statusMessage);
+
+                const request = new XMLHttpRequest();
+                request.open('POST', 'server.php');
+                
+                // через форм дейту
+                // request.setRequestHeader('Content-type', 'application/json'); // Для форм-дейты не нужно передавать заголовок
+                const formData = new FormData(form);
+
+                // объект для отправки через json
+                /* const object = {};
+                formData.forEach(function(value, key) {
+                    object[key] = value;
+                });
+
+                const json = JSON.stringify(object);
+                request.send(json); */
+
+
+                request.send(formData);
+
+                request.addEventListener('load', () => {
+                    if (request.status === 200) {
+                        console.log(request.response);
+                        statusMessage.textContent = message.success;
+                        form.reset();
+                        setTimeout(() => {
+                            statusMessage.remove();
+                        }, 2000);
+                    } else {
+                        statusMessage.textContent = message.failure;
+                    }
+                });
+
+            });
+        }
+
+    // /---Отправка формы через старый метод ХMLHttpRequest
 });
