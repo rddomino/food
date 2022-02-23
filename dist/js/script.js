@@ -249,12 +249,14 @@ window.addEventListener('DOMContentLoaded', () => {
                 `;
                 form.insertAdjacentElement('afterend', statusMessage);
 
-                const request = new XMLHttpRequest();
-                request.open('POST', 'server.php');
+
+                // --- старый метод xmlhttprequest
+               // const request = new XMLHttpRequest();
+               // request.open('POST', 'server.php');
                 
                 // через форм дейту
                 // request.setRequestHeader('Content-type', 'application/json'); // Для форм-дейты не нужно передавать заголовок
-                const formData = new FormData(form);
+               // const formData = new FormData(form);
 
                 // объект для отправки через json
                 /* const object = {};
@@ -266,24 +268,54 @@ window.addEventListener('DOMContentLoaded', () => {
                 request.send(json); */
 
 
-                request.send(formData);
+                /* request.send(formData);
 
                 request.addEventListener('load', () => {
                     if (request.status === 200) {
                         console.log(request.response);
-                        /* statusMessage.textContent = message.success; */
+                        // statusMessage.textContent = message.success;
                         showThanksModal(message.success);
                         form.reset();
-                        /* setTimeout(() => {
-                            statusMessage.remove();
-                        }, 2000); */
+                        // setTimeout(() => {
+                        //    statusMessage.remove();
+                        //}, 2000); 
                     } else {
-                        /* statusMessage.textContent = message.failure; */
+                        // statusMessage.textContent = message.failure; 
                         showThanksModal(message.failure);
                     }
+                }); */
+                // /--- старый метод xmlhttprequest
+
+                // --- Новый метод fetch
+                const formData = new FormData(form);
+
+                // объект для отправки через json
+                /*const object = {};
+                formData.forEach(function(value, key) {
+                    object[key] = value;
                 });
 
-            });
+                const json = JSON.stringify(object);*/
+
+                fetch('server.php', {
+                    method: 'POST',
+                    // для json
+                    //headers: {'Content-type': 'application/json'},
+                    //body: json
+                    body: formData
+                }).then(data => data.text())
+                .then(data => {
+                    console.log(data);                    
+                    showThanksModal(message.success);
+                    statusMessage.remove();
+                }).catch(() => {
+                    showThanksModal(message.failure);
+                }).finally(() =>{
+                    form.reset();
+                });
+            });       
+         
+
         }
 
     // /---Отправка формы через старый метод ХMLHttpRequest
