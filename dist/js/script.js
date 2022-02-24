@@ -187,6 +187,55 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+
+    // Для вывода карточек с сервера через async await и json
+    /* const getResourse = async (url, data) => {
+        const res = await fetch(url);
+
+        if (!res.ok) {
+            throw new Error(`Could not fetch ${url}, status ${res.status}`);
+        }
+
+        return await res.json();
+    };
+
+    getResourse('http://localhost:3000/menu')
+        .then(data => {
+            data.forEach(({img, altimg, title, descr, price}) => {
+                new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+            });
+        }); */
+    // Для вывода карточек с сервера через async await и json
+
+    // Для вывода карточек с сервера через async await и json - способ 2 - без классового конструктора
+    /* getResourse('http://localhost:3000/menu')
+        .then(data => createCard(data));
+
+    function createCard(data) {
+        data.forEach(({img, altimg, title, descr, price}) => {
+            const element = document.createElement('div');
+
+            const price = price * 27;
+
+            element.classList.add('menu__item');
+            element.innerHTML = `
+                <div class="menu__item">
+                    <img src=${img} alt=${altimg}>
+                    <h3 class="menu__item-subtitle">${title}</h3>
+                    <div class="menu__item-descr">${descr}</div>
+                    <div class="menu__item-divider"></div>
+                    <div class="menu__item-price">
+                        <div class="menu__item-cost">Цена:</div>
+                        <div class="menu__item-total"><span>${price}</span> грн/день</div>
+                    </div>
+                </div>
+            `;
+
+            document.querySelector('.menu .container').append(element);
+        });
+    } */
+
+
     new MenuCard(
         "img/tabs/vegy.jpg",
         "vegy",
@@ -228,10 +277,21 @@ window.addEventListener('DOMContentLoaded', () => {
         };
 
         forms.forEach(item => {
-            postData(item);
+            bindPostData(item);
         });
 
-        function postData(form) {
+        //через использование async await
+        /* const postData = async (url, data) => {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {'Content-type': 'application/json'},
+                body: data
+            });
+
+            return await res.json();
+        };*/
+ 
+        function bindPostData(form) {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
 
@@ -289,6 +349,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 // --- Новый метод fetch
                 const formData = new FormData(form);
 
+                //объект для отправки через json второй метод для асинк эвейт
+                //const json = JSON.stringify(Object.fromEntries(formData.entries()));
+
                 // объект для отправки через json
                 /*const object = {};
                 formData.forEach(function(value, key) {
@@ -303,7 +366,10 @@ window.addEventListener('DOMContentLoaded', () => {
                     //headers: {'Content-type': 'application/json'},
                     //body: json
                     body: formData
-                }).then(data => data.text())
+                })
+                // через асин эвейт
+                // postData('server.php', json);
+                .then(data => data.text()) // при асинк эвейт убираем трансформацию данные - эту строчку комментим
                 .then(data => {
                     console.log(data);                    
                     showThanksModal(message.success);
